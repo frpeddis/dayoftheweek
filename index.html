@@ -3,744 +3,455 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Day of the Week — Perpetual Calendar Trainer</title>
+<title>What Day Was It? — The Calendar Trick</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0EDFF;color:#1A1530;min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased}
-/* iOS tap reliability */
-.flashcard-scene,.stepcard,.tab,.btn,.btn-table-toggle,.fc-refresh{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.shell{max-width:660px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left)) calc(80px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-right))}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
-  .flashcard,.stepcard{transition:none!important}
-}
-/* HERO */
-.hero{padding:40px 0 28px;text-align:center}
-.hero-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#6B5FA8;margin-bottom:10px}
-.hero-title{font-family:'Fraunces',serif;font-size:clamp(2.2rem,6vw,3rem);font-weight:700;line-height:1.1;color:#1A1530}
-.hero-title em{font-style:italic;font-weight:300;color:#6B5FA8}
-.hero-sub{color:#6B5FA8;font-size:.95rem;margin-top:10px;line-height:1.6}
-/* TABS */
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#DDD8F5;border-radius:16px;padding:5px;margin-bottom:24px}
-.tab{padding:13px 8px;min-height:46px;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);background:transparent;color:#6B5FA8;display:flex;align-items:center;justify-content:center;gap:6px}
-.tab.on{background:white;color:#1A1530;box-shadow:0 2px 12px rgba(0,0,0,.1)}
-/* CARD */
-.card{background:white;border-radius:22px;padding:24px;margin-bottom:16px;border:1.5px solid #DDD8F5;transition:box-shadow .2s}
-.card:hover{box-shadow:0 4px 24px rgba(0,0,0,.06)}
-.eyebrow{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6B5FA8;margin-bottom:10px}
-/* FORMULA */
-.formula-wrap{margin:14px 0;border-radius:20px;overflow:hidden;border:2px solid #C4B5FD}
-.formula-sum-label{background:linear-gradient(135deg,#EDE9FF,#E0F2FE);text-align:center;font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6B5FA8;padding:14px 10px 0}
-.formula-terms{display:flex;flex-wrap:nowrap;justify-content:center;align-items:flex-start;gap:1px;background:linear-gradient(135deg,#EDE9FF,#E0F2FE);padding:10px 6px 16px}
-.formula-term{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1 1 0;min-width:0}
-.f-pill{border-radius:30px;padding:6px 4px;width:100%;font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(.62rem,3vw,.8rem);font-weight:800;white-space:nowrap;text-align:center;overflow:hidden;text-overflow:ellipsis}
-.f-label{font-size:clamp(.52rem,2.4vw,.62rem);font-weight:600;color:#6B5FA8;text-align:center;line-height:1.25}
-.formula-op{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:300;color:#6B5FA8;flex:0 0 auto;padding-top:5px}
-/* division + remainder */
-.formula-bottom{background:#1A1530;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.fb-step{display:flex;align-items:center;gap:10px}
-.fb-sum{background:#C4B5FD;color:#3B0764;font-weight:800;font-size:.8rem;padding:7px 16px;border-radius:30px;letter-spacing:.04em}
-.fb-divsign{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:300;color:#fff}
-.fb-seven{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:700;color:#fff}
-.fb-eq{display:flex;align-items:stretch;gap:8px;width:100%;max-width:340px}
-.fb-discard{flex:1;text-align:center;font-size:.72rem;font-weight:700;color:#9c95c7;background:rgba(255,255,255,.06);border:1.5px dashed #5a527e;border-radius:12px;padding:8px 6px;line-height:1.3;text-decoration:line-through;text-decoration-color:#f87171aa}
-.fb-discard small{display:block;font-size:.6rem;font-weight:600;opacity:.8;text-decoration:none;margin-top:2px}
-.fb-plus{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.85rem;font-weight:800;color:#3B0764;background:#FDE68A;border:2px solid #FBBF24;border-radius:12px;padding:8px 6px;letter-spacing:.03em}
-.fb-remainder{display:flex;align-items:center;gap:10px;background:#FDE68A;border-radius:14px;padding:12px 14px;width:100%;max-width:340px}
-.fb-rem-icon{font-size:1.6rem;line-height:1;flex:0 0 auto}
-.fb-rem-text{font-size:.8rem;font-weight:600;color:#78350F;line-height:1.45}
-.fb-rem-text strong{font-weight:800}
-/* TWO-PART METHOD */
-.part-block{border-radius:18px;padding:16px;margin:14px 0;border:2px solid}
-.part-1{background:linear-gradient(135deg,#FFF1F2,#FFF7ED);border-color:#FCA5A5}
-.part-2{background:linear-gradient(135deg,#F5F3FF,#EDE9FF);border-color:#C4B5FD}
-.part-3{background:linear-gradient(135deg,#ECFDF5,#CFFAFE);border-color:#5EEAD4;text-align:center}
-.part-3 .part-head{justify-content:center}
-.part-head{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:#1A1530;display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.part-badge{font-family:'Plus Jakarta Sans',sans-serif;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:#1A1530;border-radius:20px;padding:4px 10px}
-.part-row{display:flex;align-items:flex-start;justify-content:center;gap:10px}
-.part-mod{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:12px}
-.mod-arrow{font-size:.72rem;font-weight:700;color:#6B5FA8;text-align:center}
-.mod-result{font-size:.92rem;font-weight:700;color:#1A1530;background:#fff;border-radius:30px;padding:6px 16px;border:1.5px solid #DDD8F5}
-.mod-result strong{font-weight:800}
-.mod-result.final{background:#FDE68A;border-color:#FBBF24;color:#78350F}
-.part-memo{text-align:center;margin-top:10px;font-size:.82rem;font-weight:700;color:#6B5FA8}
-.part-memo strong{color:#1A1530}
-.combine-sum{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:700;color:#0F766E}
-.cb-r{color:#0D9488}
-.part-3 .mod-arrow{color:#0F766E}
-/* worked example parts */
-.ex-part{border-radius:14px;padding:12px 14px;margin-bottom:10px}
-.ex-part:last-child{margin-bottom:0}
-.ex-part-title{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6B5FA8;margin-bottom:4px}
-.ex-table-dark td{color:#fff}
-/* MONTH TABLE */
-.month-grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.month-col{display:flex;flex-direction:column;gap:6px}
-.m-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-radius:12px;font-size:.9rem;transition:transform .15s}
-.m-row:hover{transform:translateX(2px)}
-.m-name{font-weight:600;color:#1A1530}
-.m-val{font-weight:800;font-size:1.1rem;width:20px;text-align:center}
-.m-leap{font-size:.62rem;font-weight:700;border-radius:4px;padding:1px 4px;margin-left:4px;vertical-align:middle}
-/* REMAINDER */
-.rem-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.rem-chip{padding:7px 14px;border-radius:30px;font-size:.85rem;font-weight:700}
-/* TIP BOX */
-.tip-box{border-radius:14px;padding:14px 16px;font-size:.88rem;line-height:1.65;margin:12px 0}
-/* WORKED EXAMPLE TABLE */
-.ex-table{width:100%;font-size:.9rem;border-collapse:collapse;line-height:2}
-.ex-table td{padding-right:12px}
-.ex-table tr{border-bottom:1px solid #DDD8F5}
-/* FLASHCARD */
-.flashcard-scene{width:100%;height:160px;perspective:900px;margin-bottom:22px;cursor:pointer}
-.flashcard-scene:hover .flashcard{box-shadow:0 12px 40px rgba(124,58,237,.18)}
-.flashcard{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1),box-shadow .2s}
-.flashcard.flipped{transform:rotateY(180deg)}
-.flashcard-face{position:absolute;inset:0;border-radius:22px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;transition:visibility 0s linear .28s}
-/* The face turned away from the viewer must not catch taps (iOS backface-visibility is unreliable for hit-testing) */
-.flashcard-front{background:linear-gradient(135deg,#EDE9FF,#E0F2FE);border:2px solid #C4B5FD}
-.flashcard-back{transform:rotateY(180deg);visibility:hidden;pointer-events:none}
-.flashcard.flipped .flashcard-front{visibility:hidden;pointer-events:none}
-.flashcard.flipped .flashcard-back{visibility:visible;pointer-events:auto}
-.fc-tap-hint{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.5;margin-bottom:8px;display:flex;align-items:center;gap:4px}
-.fc-date-big{font-family:'Fraunces',serif;font-size:clamp(1.7rem,7vw,2.4rem);font-weight:700;line-height:1.2;color:#1A1530;text-align:center}
-.fc-back-emoji{font-size:2.6rem;line-height:1;margin-bottom:4px}
-.fc-back-day{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;line-height:1}
-.fc-back-sub{font-size:.78rem;opacity:.55;margin-top:6px}
-.fc-refresh{position:absolute;top:10px;right:12px;background:rgba(255,255,255,.7);border:none;border-radius:10px;padding:9px 12px;min-height:38px;font-size:.78rem;font-weight:700;color:#6B5FA8;cursor:pointer;transition:background .15s;backdrop-filter:blur(4px);z-index:2}
-.fc-refresh:hover{background:rgba(255,255,255,.95)}
-/* STEPS */
-.step-wrap{position:relative;padding-left:36px;margin-bottom:10px}
-.step-line{position:absolute;left:11px;top:28px;bottom:-10px;width:2px;background:#DDD8F5;border-radius:2px}
-.step-dot{position:absolute;left:0;top:8px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0;transition:all .25s;border:2px solid #DDD8F5;background:white;color:#6B5FA8}
-.step-dot.active{background:#C4B5FD;border-color:#C4B5FD;color:white;box-shadow:0 0 0 4px #EDE9FF}
-.step-dot.done{background:#A7F3D0;border-color:#34d399;color:#065f46}
-.step-box{background:#F0EDFF;border-radius:16px;padding:16px;border:1.5px solid transparent;transition:all .2s}
-.step-box.active{background:white;border-color:#C4B5FD;box-shadow:0 2px 16px rgba(196,181,253,.25)}
-.step-box.done{background:#F0FDF4;border-color:#6ee7b7}
-.step-label{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6B5FA8;margin-bottom:4px}
-.step-q{font-size:.97rem;font-weight:700;color:#1A1530}
-.step-hint{font-size:.82rem;color:#6B5FA8;margin-top:5px;line-height:1.5}
-.step-confirm{font-size:.95rem;font-weight:700;color:#065f46;margin-top:8px;display:flex;align-items:center;gap:6px}
-/* STEP FLIP CARDS */
-.trail-row{display:flex;align-items:center;gap:10px;background:#F0FDF4;border:1.5px solid #6ee7b7;border-radius:12px;padding:9px 14px;margin-bottom:8px;animation:trailIn .3s ease}
-@keyframes trailIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.trail-dot{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#A7F3D0;border:2px solid #34d399;color:#065f46;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
-.trail-text{font-size:.85rem;font-weight:700;color:#065f46;line-height:1.35}
-.trail-step{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#059669;margin-right:8px}
-.stepcard-scene{perspective:1200px;margin-top:10px}
-.stepcard-scene.card-enter{animation:cardEnter .45s cubic-bezier(.34,1.56,.64,1)}
-@keyframes cardEnter{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
-.stepcard-header{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6B5FA8;margin-bottom:8px;text-align:center}
-.stepcard-header.part-1{color:#7F1D1D}
-.stepcard-header.part-2{color:#5B21B6}
-.stepcard-header.part-3{color:#0F766E}
-.stepcard{position:relative;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.45,.05,.2,1);cursor:pointer}
-.stepcard.flipped{transform:rotateY(180deg)}
-.stepcard-face{border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:visibility 0s linear .32s}
-.stepcard-front{position:relative;min-height:150px;background:linear-gradient(135deg,#EDE9FF,#E0F2FE);border:2px solid #C4B5FD}
-.stepcard-front.front-p1{background:linear-gradient(135deg,#FFF1F2,#FFF7ED);border-color:#FCA5A5}
-.stepcard-front.front-p2{background:linear-gradient(135deg,#F5F3FF,#EDE9FF);border-color:#C4B5FD}
-.stepcard-front.front-p3{background:linear-gradient(135deg,#ECFDF5,#CFFAFE);border-color:#5EEAD4}
-.stepcard-back{position:absolute;inset:0;transform:rotateY(180deg);background:#F0FDF4;border:2px solid #6ee7b7;visibility:hidden;pointer-events:none}
-.stepcard.flipped .stepcard-front{visibility:hidden;pointer-events:none}
-.stepcard.flipped .stepcard-back{visibility:visible;pointer-events:auto}
-.sc-question{font-size:1rem;font-weight:800;color:#1A1530;line-height:1.35;margin-bottom:8px}
-.sc-tap{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6B5FA8;opacity:.7;margin-top:10px;display:flex;align-items:center;gap:4px}
-.sc-answer{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:700;color:#065f46;line-height:1}
-.sc-answer-note{font-size:.85rem;font-weight:600;color:#065f46;opacity:.85;margin-top:8px;line-height:1.4}
-/* INPUT */
-.input-row{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
-.num-input{width:100px;border:2px solid #DDD8F5;border-radius:12px;padding:10px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.05rem;font-weight:700;outline:none;transition:all .18s;background:white;color:#1A1530;text-align:center}
-.num-input:focus{border-color:#C4B5FD;box-shadow:0 0 0 3px #EDE9FF}
-.num-input.err{border-color:#f87171;background:#fff1f2}
-.err-msg{font-size:.82rem;color:#dc2626;margin-top:5px;font-weight:600}
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:12px;padding:10px 18px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
-.btn:active{transform:scale(.97)}
-.btn-check{background:#C4B5FD;color:white}
-.btn-check:hover{background:#a78bfa;transform:translateY(-1px);box-shadow:0 4px 14px rgba(167,139,250,.4)}
-.btn-hint{background:#FEF08A;color:#78350f}
-.btn-hint:hover{background:#fde047}
-.btn-new{background:#1A1530;color:white}
-.btn-new:hover{opacity:.85;transform:translateY(-1px)}
-.btn-skip{background:#DDD8F5;color:#1A1530;font-size:.8rem;padding:7px 14px}
-.btn-table-toggle{background:#FEF08A;color:#78350f;border:none;border-radius:10px;padding:7px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .18s}
-.btn-table-toggle:hover{background:#fde047}
-/* INLINE MONTH TABLE */
-.inline-month-table{margin-top:10px;border-radius:14px;overflow:hidden;border:1.5px solid #DDD8F5;animation:slideDown .22s ease}
-@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.imt-grid{display:grid;grid-template-columns:1fr 1fr}
-.imt-col{display:flex;flex-direction:column}
-.imt-row{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;font-size:.82rem;border-bottom:1px solid rgba(0,0,0,.04)}
-.imt-row:last-child{border-bottom:none}
-.imt-name{font-weight:600}
-.imt-val{font-weight:800;font-size:.95rem;width:18px;text-align:center}
-.imt-leap{font-size:.58rem;font-weight:700;border-radius:3px;padding:1px 3px;margin-left:3px}
-.imt-note{font-size:.72rem;color:#6B5FA8;padding:6px 12px;background:#F0EDFF;text-align:center}
-/* RESULT */
-.result-reveal{border-radius:22px;padding:32px 24px;text-align:center;margin-top:16px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
-@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
-.result-emoji-big{font-size:3.5rem;line-height:1;margin-bottom:8px}
-.result-day-name{font-family:'Fraunces',serif;font-size:3rem;font-weight:700;line-height:1}
-.result-context{font-size:.92rem;opacity:.75;margin-top:8px}
-.result-math{font-size:.82rem;margin-top:14px;opacity:.65;font-family:monospace;background:rgba(0,0,0,.06);padding:8px 12px;border-radius:10px;display:inline-block}
-/* FOOTER */
-footer{text-align:center;padding:24px 0 8px;font-size:.8rem;color:#6B5FA8;font-weight:500;letter-spacing:.04em}
-footer strong{font-weight:700;color:#1A1530}
-/* HIDDEN */
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Nunito',sans-serif;background:#FFF7E6;color:#3A3060;min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased}
+.tap{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.shell{max-width:560px;margin:0 auto;padding:0 16px calc(60px + env(safe-area-inset-bottom))}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+.hero{padding:34px 0 18px;text-align:center}
+.hero h1{font-family:'Baloo 2',cursive;font-size:clamp(2rem,8vw,2.8rem);font-weight:800;line-height:1.05;color:#3A3060}
+.hero h1 span{color:#F49AC2}
+.hero p{margin-top:8px;font-size:1rem;font-weight:600;color:#9385C0}
+
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#E7DEFF;border-radius:18px;padding:5px;margin-bottom:22px}
+.tab{padding:14px 8px;min-height:48px;border:none;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;cursor:pointer;background:transparent;color:#8B7BC7;transition:all .18s}
+.tab.on{background:#fff;color:#3A3060;box-shadow:0 3px 12px rgba(140,110,200,.22)}
+
+.card{background:#fff;border-radius:24px;padding:22px;margin-bottom:16px;border:3px solid #E7DEFF}
+.card h2{font-family:'Baloo 2',cursive;font-size:1.35rem;font-weight:800;color:#3A3060;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.card p{font-size:1rem;line-height:1.6;color:#6A5E92}
+.big{font-size:1.05rem}
+
+.part{border-radius:20px;padding:16px;margin-top:14px;border:3px solid}
+.part.p1{background:#FFEFF4;border-color:#F8C6DA}
+.part.p2{background:#EAF4FF;border-color:#BCD7F5}
+.part.p3{background:#EAFBF1;border-color:#B6E9CB}
+.part .ph{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.badge{font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fff;border-radius:20px;padding:4px 10px}
+.b1{background:#EC8AAE}.b2{background:#7FA8E8}.b3{background:#5FC89A}
+.adder{display:flex;align-items:stretch;justify-content:center;gap:6px}
+.tile{flex:1;border-radius:16px;padding:12px 6px;text-align:center;border:2.5px solid;background:#fff}
+.tile .tn{font-family:'Baloo 2',cursive;font-size:1.7rem;font-weight:800;line-height:1}
+.tile .tl{font-size:.72rem;font-weight:700;margin-top:3px;line-height:1.2;color:#6A5E92}
+.t-day{border-color:#F8C6DA}.t-mon{border-color:#FBE3A6}.t-y1{border-color:#BCD7F5}.t-y2{border-color:#BCD7F5}
+.op{display:flex;align-items:center;font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:#9385C0}
+.seven{text-align:center;margin-top:12px}
+.seven .arr{font-size:1.3rem;color:#9385C0}
+.seven .pill{display:inline-block;margin-top:6px;background:#FFF;border:2.5px dashed #C9BCEE;border-radius:30px;padding:8px 18px;font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;color:#6A5E92}
+.seven .pill b{color:#3A3060}
+.memo{text-align:center;margin-top:10px;font-weight:800;color:#8B7BC7;font-size:.95rem}
+.combine .big-eq{font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:#2F9E6B;text-align:center;margin:4px 0}
+.final-pill{background:#FCEFA8;border:2.5px solid #F2D75B;color:#8A6D12}
+
+.daykey{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{flex:1 1 auto;min-width:128px;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;font-weight:800;font-size:.95rem;transition:transform .15s}
+.chip:hover{transform:translateY(-2px) rotate(-1deg)}
+.chip .n{font-family:'Baloo 2',cursive;font-size:1.3rem;width:24px;text-align:center}
+.chip .e{font-size:1.2rem}
+
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-radius:12px;font-size:.95rem;font-weight:700;transition:transform .15s}
+.mrow:hover{transform:translateX(3px)}
+.mrow .mv{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.2rem}
+.leapnote{font-size:.88rem;color:#6A5E92;margin-top:10px;line-height:1.5;background:#FFF7E6;border-radius:12px;padding:10px 12px}
+.leapnote b{color:#3A3060}
+
+.ex{border-radius:16px;padding:12px 14px;margin-top:10px}
+.ex .ttl{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.ex .line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:.98rem}
+.ex .line .v{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.15rem}
+
+.scene{perspective:1200px;margin-bottom:14px}
+.flip{position:relative;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.45,.05,.2,1);cursor:pointer}
+.flip.flipped{transform:rotateY(180deg)}
+.face{border-radius:24px;padding:24px 20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.back{position:absolute;inset:0;transform:rotateY(180deg)}
+
+.datecard .front{background:linear-gradient(135deg,#FFE3F0,#E7DEFF);border:3px solid #F8C6DA;min-height:170px;position:relative}
+.datecard .q{font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#C77BA0}
+.datecard .date{font-family:'Baloo 2',cursive;font-size:clamp(1.7rem,7vw,2.4rem);font-weight:800;color:#3A3060;line-height:1.1;margin:8px 0}
+.tiphint{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9385C0;opacity:.7;margin-top:6px}
+.datecard .back{min-height:170px}
+.bigemoji{font-size:3rem;line-height:1}
+.bigday{font-family:'Baloo 2',cursive;font-size:2.4rem;font-weight:800;line-height:1;margin-top:2px}
+.bigsub{font-size:.85rem;font-weight:700;opacity:.7;margin-top:6px}
+
+.newbtn{background:#B9A4F0;color:#fff;border:none;border-radius:14px;padding:11px 22px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(150,120,220,.35)}
+.newbtn:active{transform:scale(.97)}
+.newbtn.dark{background:#8B7BC7}
+
+.stephead{font-family:'Baloo 2',cursive;font-size:.74rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-align:center;margin:0 0 6px;color:#9385C0}
+.stephead.p1{color:#C77BA0}.stephead.p2{color:#5E86C9}.stephead.p3{color:#3A9E73}
+.stepflip .front{min-height:150px}
+.stepflip .front.f1{background:linear-gradient(135deg,#FFEFF4,#FFF7E6);border:3px solid #F8C6DA}
+.stepflip .front.f2{background:linear-gradient(135deg,#EAF4FF,#F3EEFF);border:3px solid #BCD7F5}
+.stepflip .front.f3{background:linear-gradient(135deg,#EAFBF1,#E7FBF6);border:3px solid #B6E9CB}
+.stepflip .back{background:linear-gradient(135deg,#EAFBF1,#F3FFF9);border:3px solid #9FE0BF}
+.sc-q{font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;color:#3A3060;line-height:1.3;margin-bottom:6px}
+.sc-hint{font-size:.86rem;color:#6A5E92;line-height:1.45}
+.sc-tap{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9385C0;opacity:.75;margin-top:12px}
+.sc-ans{font-family:'Baloo 2',cursive;font-size:2.6rem;font-weight:800;color:#2F9E6B;line-height:1}
+.sc-note{font-size:.9rem;font-weight:700;color:#2F9E6B;opacity:.9;margin-top:8px}
+
+.trail{display:flex;align-items:center;gap:10px;background:#EAFBF1;border:2.5px solid #9FE0BF;border-radius:14px;padding:9px 14px;margin-bottom:10px;animation:slideIn .35s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.trail .tk{width:24px;height:24px;border-radius:50%;background:#9FE0BF;color:#16653B;display:flex;align-items:center;justify-content:center;font-weight:800;flex:0 0 auto}
+.trail .tt{font-size:.9rem;font-weight:700;color:#1F7A52;line-height:1.3}
+.trail .ts{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#3A9E73;margin-right:6px}
+
+.minit{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#fff;border-radius:12px;padding:6px}
+.minit .r{display:flex;justify-content:space-between;padding:5px 10px;border-radius:8px;font-size:.86rem;font-weight:700;color:#6A5E92}
+.minit .r b{font-family:'Baloo 2',cursive;color:#3A3060}
+.minit .r.hl{background:#FCEFA8;outline:2px solid #F2D75B}
+
+.cardenter{animation:cardIn .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.confetti{position:fixed;top:-10px;width:10px;height:14px;z-index:50;pointer-events:none;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.9}}
+
+footer{text-align:center;padding:22px 0;font-size:.85rem;color:#9385C0;font-weight:700}
 .hidden{display:none!important}
 </style>
 </head>
 <body>
 <div class="shell">
-  <!-- HERO -->
+
   <div class="hero">
-    <div class="hero-eyebrow">Perpetual Calendar Trainer</div>
-    <h1 class="hero-title">Find the<br><em>day.</em></h1>
-    <p class="hero-sub">Learn the formula. Any date from 1900 to 2099.</p>
+    <h1>What day <span>was it?</span></h1>
+    <p>Name the day of any birthday — in your head!</p>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
-    <button class="tab on" id="tab-learn" data-tap="tab-learn">📖 How it works</button>
-    <button class="tab" id="tab-practice" data-tap="tab-practice">🧠 Practice</button>
+    <button class="tab on tap" id="t-learn" onclick="tab('learn')">📖 The trick</button>
+    <button class="tab tap" id="t-play" onclick="tab('play')">🎮 Try it</button>
   </div>
 
-  <!-- ═══ LEARN TAB ═══ -->
-  <div id="panel-learn">
+  <div id="p-learn">
+
     <div class="card">
-      <div class="eyebrow">The Big Idea</div>
-      <p style="font-size:.95rem;line-height:1.7;color:#6B5FA8">
-        Every date from <strong style="color:#1A1530">1900 to 2099</strong> lands on a fixed day of the week, and you can work it out with simple addition — no calendar needed. You'll do it in <strong style="color:#1A1530">three short steps</strong>:
-      </p>
-      <p style="font-size:.92rem;line-height:1.7;color:#6B5FA8;margin-top:8px">
-        <strong style="color:#1A1530">Part 1</strong> uses the day and month, <strong style="color:#1A1530">Part 2</strong> uses the year. In each part you add two numbers, then find the <strong style="color:#1A1530">remainder</strong> — how much is left over after taking away the largest multiple of 7 that fits (0, 7, 14, 21…). That leftover is always a number from <strong style="color:#1A1530">0 to 6</strong>. Keep the two leftovers in mind, and in <strong style="color:#1A1530">Part 3</strong> you add them and take the remainder one last time. The final number (0–6) tells you the day — see the key below.
-      </p>
+      <h2>🍪 The big idea</h2>
+      <p class="big">Do <b>two easy mini-sums</b> and remember the leftover from each. Then add those two leftovers — and the answer is the day!</p>
 
-      <!-- PART 1 -->
-      <div class="part-block part-1">
-        <div class="part-head"><span class="part-badge">Part 1</span> Day + Month</div>
-        <div class="part-row">
-          <div class="formula-term">
-            <div class="f-pill" style="background:#FCA5A5;color:#7F1D1D">DD</div>
-            <div class="f-label">Day of<br>the month</div>
-          </div>
-          <div class="formula-op">+</div>
-          <div class="formula-term">
-            <div class="f-pill" style="background:#FDE68A;color:#78350F">M</div>
-            <div class="f-label">Month<br>factor</div>
-          </div>
+      <div class="part p1">
+        <div class="ph"><span class="badge b1">Part 1</span> Day + Month</div>
+        <div class="adder">
+          <div class="tile t-day"><div class="tn">22</div><div class="tl">the day</div></div>
+          <div class="op">+</div>
+          <div class="tile t-mon"><div class="tn">4</div><div class="tl">month number</div></div>
         </div>
-        <div class="part-mod">
-          <span class="mod-arrow">↓ closest multiple of 7 below the sum</span>
-          <span class="mod-result">remainder <strong>R₁</strong> (0–6)</span>
+        <div class="seven">
+          <div class="arr">⬇ count out the 7s</div>
+          <div class="pill">leftover = <b>A</b> (0–6)</div>
         </div>
-        <div class="part-memo">🧠 memorize <strong>R₁</strong></div>
+        <div class="memo">🧠 remember <b>A</b></div>
       </div>
 
-      <!-- PART 2 -->
-      <div class="part-block part-2">
-        <div class="part-head"><span class="part-badge">Part 2</span> Year</div>
-        <div class="part-row">
-          <div class="formula-term">
-            <div class="f-pill" style="background:#C4B5FD;color:#3B0764">YY</div>
-            <div class="f-label">Last 2<br>digits of year</div>
-          </div>
-          <div class="formula-op">+</div>
-          <div class="formula-term">
-            <div class="f-pill" style="background:#C4B5FD;color:#3B0764">⌊YY⁄4⌋</div>
-            <div class="f-label">YY ÷ 4<br>(round down)</div>
-          </div>
+      <div class="part p2">
+        <div class="ph"><span class="badge b2">Part 2</span> Year</div>
+        <div class="adder">
+          <div class="tile t-y1"><div class="tn">63</div><div class="tl">last 2 digits</div></div>
+          <div class="op">+</div>
+          <div class="tile t-y2"><div class="tn">15</div><div class="tl">÷4, drop dot</div></div>
         </div>
-        <div class="part-mod">
-          <span class="mod-arrow">↓ closest multiple of 7 below the sum</span>
-          <span class="mod-result">remainder <strong>R₂</strong> (0–6)</span>
+        <div class="seven">
+          <div class="arr">⬇ count out the 7s</div>
+          <div class="pill">leftover = <b>B</b> (0–6)</div>
         </div>
-        <div class="part-memo">🧠 memorize <strong>R₂</strong></div>
+        <div class="memo">🧠 remember <b>B</b></div>
       </div>
 
-      <!-- PART 3 — COMBINE -->
-      <div class="part-block part-3">
-        <div class="part-head"><span class="part-badge">Part 3</span> Combine</div>
-        <div class="combine-sum"><span class="cb-r">R₁</span> + <span class="cb-r">R₂</span></div>
-        <div class="part-mod" style="margin-top:10px">
-          <span class="mod-arrow">↓ closest multiple of 7 below (the 7 times table)</span>
-          <span class="mod-result final">final remainder = the day ⭐</span>
+      <div class="part p3 combine">
+        <div class="ph" style="justify-content:center"><span class="badge b3">Part 3</span> Add them</div>
+        <div class="big-eq">A + B</div>
+        <div class="seven">
+          <div class="arr">⬇ count out the 7s one last time</div>
+          <div class="pill final-pill">leftover = the day ⭐</div>
         </div>
       </div>
 
-      <div class="tip-box" style="background:#FFF7ED;border:1.5px solid #FED7AA">
-        <strong>🗓 Century rule:</strong> 1900–1999 → as-is. For <strong>2000–2099</strong>, subtract 1 inside Part 2 before finding the remainder. <em style="color:#9A3412">E.g. 2024 → 24 + 6 − 1 = 29.</em>
+      <div class="leapnote">🚀 <b>Years 2000+:</b> take away 1 in Part 2 before counting 7s. &nbsp; 🐸 <b>Leap years:</b> use <b>0</b> for January and <b>3</b> for February (other months stay the same).</div>
+    </div>
+
+    <div class="card">
+      <h2>🗝️ The day key</h2>
+      <p>The final leftover always means the same day:</p>
+      <div class="daykey" id="daykey"></div>
+    </div>
+
+    <div class="card">
+      <h2>📅 The month numbers</h2>
+      <p>The one thing to remember. <b>Same color = same number</b>, so it sticks fast!</p>
+      <div class="mgrid" id="mtable"></div>
+    </div>
+
+    <div class="card">
+      <h2>✨ Watch it work — Nov 22, 1963</h2>
+      <div class="ex" style="background:#FFEFF4">
+        <div class="ttl" style="color:#C77BA0">Part 1 · Day + Month</div>
+        <div class="line"><span>22 + 4 (November)</span><span class="v">= 26</span></div>
+        <div class="line"><span>throw away 21 (= 3×7)</span><span class="v" style="color:#C77BA0">A = 5</span></div>
       </div>
-      <div class="tip-box" style="background:#F0FDF4;border:1.5px solid #A7F3D0">
-        <strong>🔄 Leap year:</strong> in a leap year, January → <strong>0</strong> (not 1) and February → <strong>3</strong> (not 4). <em style="color:#166534">E.g. Feb 2020 uses 3, not 4.</em>
+      <div class="ex" style="background:#EAF4FF;margin-top:8px">
+        <div class="ttl" style="color:#5E86C9">Part 2 · Year</div>
+        <div class="line"><span>63 + 15 (63÷4)</span><span class="v">= 78</span></div>
+        <div class="line"><span>throw away 77 (= 11×7)</span><span class="v" style="color:#5E86C9">B = 1</span></div>
+      </div>
+      <div class="ex" style="background:#EAFBF1;margin-top:8px">
+        <div class="ttl" style="color:#3A9E73">Part 3 · Add them</div>
+        <div class="line"><span>A + B = 5 + 1</span><span class="v">= 6</span></div>
+        <div class="line"><span>6 has no 7 to remove</span><span class="v" style="color:#2F9E6B">→ 🎉 Friday</span></div>
       </div>
     </div>
 
-    <!-- MONTH FACTORS -->
-    <div class="card">
-      <div class="eyebrow">⭐ The only thing to memorize — month factors</div>
-      <p style="font-size:.85rem;color:#6B5FA8;margin-bottom:10px;line-height:1.5">Same color = same number. Spot the pairs and you'll learn this in minutes.</p>
-      <div class="month-grid-2col" id="learn-month-table"></div>
-      <p style="font-size:.75rem;color:#6B5FA8;margin-top:10px;line-height:1.5">✦ Leap year value for January &amp; February only. All other months unchanged.</p>
-    </div>
-
-    <!-- REMAINDER KEY -->
-    <div class="card">
-      <div class="eyebrow">Remainder → Day of week</div>
-      <div class="rem-grid" id="remainder-grid"></div>
-    </div>
-
-    <!-- WORKED EXAMPLE -->
-    <div class="card">
-      <div class="eyebrow">Worked example — Nov 22, 1963</div>
-      <div class="ex-part" style="background:#FFF1F2;border:1.5px solid #FCA5A5">
-        <div class="ex-part-title">Part 1 · Day + Month</div>
-        <table class="ex-table">
-          <tbody>
-            <tr><td style="color:#6B5FA8">Day of month</td><td style="font-weight:700;text-align:right">22</td></tr>
-            <tr><td style="color:#6B5FA8">November factor</td><td style="font-weight:700;text-align:right">+ 4</td></tr>
-            <tr><td style="color:#6B5FA8">Sum</td><td style="font-weight:700;text-align:right">= 26</td></tr>
-            <tr style="border-bottom:none"><td style="color:#6B5FA8">26 → closest 7× below is 21</td><td style="font-weight:800;text-align:right;color:#7F1D1D">R₁ = 5</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="ex-part" style="background:#F5F3FF;border:1.5px solid #C4B5FD">
-        <div class="ex-part-title">Part 2 · Year</div>
-        <table class="ex-table">
-          <tbody>
-            <tr><td style="color:#6B5FA8">Last 2 digits of 1963</td><td style="font-weight:700;text-align:right">63</td></tr>
-            <tr><td style="color:#6B5FA8">63 ÷ 4, round down</td><td style="font-weight:700;text-align:right">+ 15</td></tr>
-            <tr><td style="color:#6B5FA8">Sum (1900s, no −1)</td><td style="font-weight:700;text-align:right">= 78</td></tr>
-            <tr style="border-bottom:none"><td style="color:#6B5FA8">78 → closest 7× below is 77</td><td style="font-weight:800;text-align:right;color:#3B0764">R₂ = 1</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="ex-part" style="background:linear-gradient(135deg,#ECFDF5,#CFFAFE);border:1.5px solid #5EEAD4">
-        <div class="ex-part-title" style="color:#0F766E">Part 3 · Combine</div>
-        <table class="ex-table">
-          <tbody>
-            <tr><td style="color:#6B5FA8">R₁ + R₂ = 5 + 1</td><td style="font-weight:700;text-align:right">= 6</td></tr>
-            <tr style="border-bottom:none"><td style="color:#6B5FA8">6 → closest 7× below is 0</td><td style="font-weight:800;text-align:right;color:#0F766E">→ 6 = 🎉 Friday</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 
-  <!-- ═══ PRACTICE TAB ═══ -->
-  <div id="panel-practice" class="hidden">
-    <!-- FLASHCARD -->
-    <div class="flashcard-scene" id="flashcard-scene" data-tap="flip-flashcard">
-      <div class="flashcard" id="flashcard">
-        <div class="flashcard-face flashcard-front" id="fc-front">
-          <button class="fc-refresh" data-tap="new-date">🎲 New date</button>
-          <div class="fc-tap-hint">👆 tap to reveal</div>
-          <div class="fc-date-big" id="fc-date-big"></div>
+  <div id="p-play" class="hidden">
+    <div class="scene">
+      <div class="flip datecard" id="datecard" onclick="flipDate()">
+        <div class="face front">
+          <button class="newbtn dark tap" style="position:absolute;top:12px;right:12px;padding:8px 14px;font-size:.85rem" onclick="event.stopPropagation();newDate()">🎲</button>
+          <div class="q">What day was…</div>
+          <div class="date" id="pl-date"></div>
+          <div class="tiphint">👆 tap to peek at the answer</div>
         </div>
-        <div class="flashcard-face flashcard-back" id="fc-back">
-          <button class="fc-refresh" data-tap="new-date">🎲 New date</button>
-          <div class="fc-back-emoji" id="fc-back-emoji"></div>
-          <div class="fc-back-day" id="fc-back-day"></div>
-          <div class="fc-back-sub" id="fc-back-sub"></div>
+        <div class="face back" id="dateback">
+          <div class="bigemoji" id="d-emoji"></div>
+          <div class="bigday" id="d-day"></div>
+          <div class="bigsub" id="d-sub"></div>
         </div>
       </div>
     </div>
 
-    <!-- STEPS CONTAINER -->
-    <div id="steps-container"></div>
+    <p style="text-align:center;font-weight:700;color:#9385C0;font-size:.92rem;margin:-2px 0 14px">…or work it out step by step 👇</p>
 
-    <!-- RESULT -->
-    <div id="result-block" class="hidden"></div>
-
-    <!-- SKIP -->
-    <div id="skip-row" class="hidden" style="margin-top:8px">
-      <button class="btn btn-skip" data-tap="new-date">Skip → new date</button>
-    </div>
+    <div id="psteps"></div>
+    <div id="pfinal"></div>
   </div>
 
-  <footer><strong>by F. Peddis</strong> · Perpetual Calendar Formula</footer>
+  <footer>made for curious kids · the calendar trick</footer>
 </div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
-const MONTH_FACTORS = {
-  1:{name:"January",  factor:1,leapFactor:0},
-  2:{name:"February", factor:4,leapFactor:3},
-  3:{name:"March",    factor:4,leapFactor:4},
-  4:{name:"April",    factor:0,leapFactor:0},
-  5:{name:"May",      factor:2,leapFactor:2},
-  6:{name:"June",     factor:5,leapFactor:5},
-  7:{name:"July",     factor:0,leapFactor:0},
-  8:{name:"August",   factor:3,leapFactor:3},
-  9:{name:"September",factor:6,leapFactor:6},
-  10:{name:"October", factor:1,leapFactor:1},
-  11:{name:"November",factor:4,leapFactor:4},
-  12:{name:"December",factor:6,leapFactor:6},
+const MONTHS={
+ 1:{name:"January",  n:1, leap:0},
+ 2:{name:"February", n:4, leap:3},
+ 3:{name:"March",    n:4},
+ 4:{name:"April",    n:0},
+ 5:{name:"May",      n:2},
+ 6:{name:"June",     n:5},
+ 7:{name:"July",     n:0},
+ 8:{name:"August",   n:3},
+ 9:{name:"September",n:6},
+ 10:{name:"October", n:1},
+ 11:{name:"November",n:4},
+ 12:{name:"December",n:6},
 };
-const REMAINDER_TO_DAY = {0:"Saturday",1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"Friday"};
-const DAY_EMOJI  = {Sunday:"☀️",Monday:"🌙",Tuesday:"🔴",Wednesday:"💙",Thursday:"⚡",Friday:"🎉",Saturday:"⭐"};
-const DAY_COLOR  = {Sunday:"#FFD6A5",Monday:"#A5C8FF",Tuesday:"#FFB3B3",Wednesday:"#B3D9FF",Thursday:"#D4B3FF",Friday:"#B3FFD4",Saturday:"#FFE8A5"};
-const DAY_ACCENT = {Sunday:"#F4900C",Monday:"#2A7FDD",Tuesday:"#DD3030",Wednesday:"#1A6DB5",Thursday:"#7A30DD",Friday:"#1AAA62",Saturday:"#D4920A"};
-const FACTOR_STYLE = {
-  0:{bg:"#DCFCE7",color:"#166534"},
-  1:{bg:"#DBEAFE",color:"#1E40AF"},
-  2:{bg:"#FEF9C3",color:"#854D0E"},
-  3:{bg:"#FCE7F3",color:"#9D174D"},
-  4:{bg:"#EDE9FE",color:"#5B21B6"},
-  5:{bg:"#FFEDD5",color:"#9A3412"},
-  6:{bg:"#E0F2FE",color:"#075985"},
-};
+const DAYS={0:"Saturday",1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"Friday"};
+const EMOJI={Sunday:"☀️",Monday:"🌙",Tuesday:"🚀",Wednesday:"🐬",Thursday:"⚡",Friday:"🎉",Saturday:"⭐"};
+const BG={Sunday:"#FFE7C2",Monday:"#D9E6FF",Tuesday:"#FFD9DE",Wednesday:"#D6F2FF",Thursday:"#EADCFF",Friday:"#D5F7E2",Saturday:"#FFF3C2"};
+const FG={Sunday:"#C77F1E",Monday:"#4A63C0",Tuesday:"#CC5A6A",Wednesday:"#2E84B5",Thursday:"#8048C8",Friday:"#2F9E6B",Saturday:"#B9941A"};
+const NCOL={0:["#D9F7E4","#1F7A4D"],1:["#DCE9FF","#2B4FB0"],2:["#FBF1C7","#9A7A12"],3:["#FCE0EE","#B23A77"],4:["#EADCFF","#6A3DC0"],5:["#FFE4D0","#C0612A"],6:["#D6F0FF","#1E6FA8"]};
 
-function isLeapYear(y){
-  if(y%400===0)return true;
-  if(y%100===0)return false;
-  return y%4===0;
-}
-function calcDay(day,month,year){
-  const leap=isLeapYear(year);
-  const lastTwo=year%100;
-  const yearDiv4=Math.floor(lastTwo/4);
-  const mf=MONTH_FACTORS[month];
-  const factor=(month<=2&&leap)?mf.leapFactor:mf.factor;
-  const centuryAdj=Math.floor(year/100)===20?-1:0;
-  // Part 1: day + month
-  const sum1=day+factor;
-  const r1=((sum1%7)+7)%7;
-  // Part 2: year (incl. century adjustment)
-  const sum2=lastTwo+yearDiv4+centuryAdj;
-  const r2=((sum2%7)+7)%7;
-  // Combine
-  const combine=r1+r2;
-  const remainder=((combine%7)+7)%7;
-  const numerator=lastTwo+yearDiv4+day+factor+centuryAdj;
-  return{day,month,year,leap,lastTwo,yearDiv4,factor,centuryAdj,
-    sum1,r1,sum2,r2,combine,numerator,remainder,dayName:REMAINDER_TO_DAY[remainder]};
+function isLeap(y){return y%400===0||(y%100!==0&&y%4===0);}
+function monthNum(m,y){const M=MONTHS[m];return (isLeap(y)&&M.leap!==undefined)?M.leap:M.n;}
+
+function solve(d,m,y){
+  const mn=monthNum(m,y);
+  const yy=y%100;
+  const quarter=Math.floor(yy/4);
+  const minus=(y>=2000)?1:0;
+  const sum1=d+mn;
+  const A=((sum1%7)+7)%7;
+  const sum2=yy+quarter-minus;
+  const B=((sum2%7)+7)%7;
+  const sum3=A+B;
+  const left=((sum3%7)+7)%7;
+  return {d,m,y,mn,yy,quarter,minus,sum1,A,sum2,B,sum3,left,
+          day:DAYS[left], name:MONTHS[m].name, leap:isLeap(y)};
 }
 
-// Pool of 100 dates — built from integers only (no Date string parsing; iOS-safe)
-function daysInMonth(year,month){
-  return new Date(year, month, 0).getDate(); // local Date from integers is reliable on iOS
-}
-function generate100Dates(){
-  const dates=[];
-  // Mulberry32 PRNG — stays within safe integer range, deterministic, works everywhere
-  let seed=42>>>0;
-  const rand=()=>{
-    seed=(seed+0x6D2B79F5)>>>0;
-    let t=seed;
-    t=Math.imul(t^(t>>>15), t|1);
-    t^=t+Math.imul(t^(t>>>7), t|61);
-    return ((t^(t>>>14))>>>0)/4294967296;
-  };
-  while(dates.length<100){
-    const year=1900+Math.floor(rand()*200);      // 1900–2099
-    const month=1+Math.floor(rand()*12);          // 1–12
-    const maxDay=daysInMonth(year,month);
-    const day=1+Math.floor(rand()*maxDay);         // valid day for that month
-    dates.push({day,month,year});
+function buildKey(){
+  const el=document.getElementById('daykey');
+  for(let i=0;i<7;i++){
+    const day=DAYS[i];
+    const c=document.createElement('div');
+    c.className='chip';c.style.background=BG[day];c.style.color=FG[day];
+    c.innerHTML='<span class="n">'+i+'</span><span class="e">'+EMOJI[day]+'</span><span>'+day+'</span>';
+    el.appendChild(c);
   }
-  return dates;
 }
-const POOL=generate100Dates();
-
-// ── BUILD STATIC LEARN CONTENT ────────────────────────────────────────────────
-function buildLearnMonthTable(){
-  const container=document.getElementById('learn-month-table');
-  const cols=[[1,2,3,4,5,6],[7,8,9,10,11,12]];
-  cols.forEach(col=>{
-    const colDiv=document.createElement('div');
-    colDiv.className='month-col';
-    col.forEach(m=>{
-      const info=MONTH_FACTORS[m];
-      const fs=FACTOR_STYLE[info.factor];
-      const row=document.createElement('div');
-      row.className='m-row';
-      row.style.background=fs.bg;
-      let leapHtml='';
-      if(info.leapFactor!==info.factor){
-        const lfs=FACTOR_STYLE[info.leapFactor];
-        leapHtml=`<span class="m-leap" style="background:${lfs.bg};color:${lfs.color}">${info.leapFactor}✦</span>`;
-      }
-      row.innerHTML=`<span class="m-name">${info.name}</span><span style="display:flex;align-items:center"><span class="m-val" style="color:${fs.color}">${info.factor}</span>${leapHtml}</span>`;
-      colDiv.appendChild(row);
+function buildMonths(){
+  const el=document.getElementById('mtable');
+  [[1,2,3,4,5,6],[7,8,9,10,11,12]].forEach(function(col){
+    col.forEach(function(m){
+      const M=MONTHS[m];const c=NCOL[M.n];
+      const r=document.createElement('div');
+      r.className='mrow';r.style.background=c[0];r.style.color=c[1];
+      r.innerHTML='<span>'+M.name+'</span><span class="mv">'+M.n+'</span>';
+      el.appendChild(r);
     });
-    container.appendChild(colDiv);
   });
 }
 
-function buildRemainderGrid(){
-  const grid=document.getElementById('remainder-grid');
-  Object.entries(REMAINDER_TO_DAY).forEach(([r,d])=>{
-    const chip=document.createElement('div');
-    chip.className='rem-chip';
-    chip.style.background=DAY_COLOR[d];
-    chip.style.color=DAY_ACCENT[d];
-    chip.textContent=`${r} → ${DAY_EMOJI[d]} ${d}`;
-    grid.appendChild(chip);
-  });
+function tab(t){
+  document.getElementById('p-learn').classList.toggle('hidden',t!=='learn');
+  document.getElementById('p-play').classList.toggle('hidden',t!=='play');
+  document.getElementById('t-learn').classList.toggle('on',t==='learn');
+  document.getElementById('t-play').classList.toggle('on',t==='play');
+  if(t==='play'&&!cur) newDate();
 }
 
-// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
-function switchTab(tab){
-  document.getElementById('panel-learn').classList.toggle('hidden', tab!=='learn');
-  document.getElementById('panel-practice').classList.toggle('hidden', tab!=='practice');
-  document.getElementById('tab-learn').classList.toggle('on', tab==='learn');
-  document.getElementById('tab-practice').classList.toggle('on', tab==='practice');
-  if(tab==='practice' && !state.dateData) newDate();
+let cur=null, dateFlipped=false;
+const st={idx:0, flipped:{}, done:false, enter:false};
+
+function randDate(){
+  const y=1900+Math.floor(Math.random()*200);
+  const m=1+Math.floor(Math.random()*12);
+  const maxD=new Date(y,m,0).getDate();
+  const d=1+Math.floor(Math.random()*maxD);
+  return {d:d,m:m,y:y};
+}
+function newDate(){
+  const r=randDate();
+  cur=solve(r.d,r.m,r.y);
+  st.idx=0; st.flipped={}; st.done=false; st.enter=false; dateFlipped=false;
+  renderPlay();
 }
 
-// ── PRACTICE STATE ────────────────────────────────────────────────────────────
-const state={
-  dateData:null,
-  stepIdx:0,
-  flippedSteps:{},
-  cardEnter:false,
-  done:false,
-  showTable:false,
-  flipped:false,
-  steps:[],
-};
+function flipDate(){
+  dateFlipped=!dateFlipped;
+  document.getElementById('datecard').classList.toggle('flipped',dateFlipped);
+}
 
-function buildSteps(c){
-  const leap=c.leap;
-  const mName=MONTH_FACTORS[c.month].name;
-  const is21st=c.year>=2000;
-  const mf=MONTH_FACTORS[c.month];
-  const leapNote=leap&&c.month<=2?` (leap year value)`:"";
-  return[
-    // PART 1 — Day + Month
-    {part:1,
-     q:`Part 1 · Add the day (${c.day}) + ${mName} factor (${c.factor}).`,
-     hint:`Just add them up.${leap&&c.month<=2?" ⚠️ leap year — use the leap factor.":""}`,
-     answer:c.sum1,confirm:`${c.day} + ${c.factor} = ${c.sum1}`},
-    {part:1,
-     q:`Part 1 · How far is ${c.sum1} above the closest multiple of 7 below it?`,
-     hint:`Find the biggest 7× that fits in ${c.sum1} (…, 7, 14, 21, 28…), then subtract. 🧠 this is R₁.`,
-     answer:c.r1,confirm:`R₁ = ${c.r1}  (memorize)`},
-    // PART 2 — Year
-    {part:2,
-     q:`Part 2 · Add ${c.lastTwo} (last 2 digits) + ${c.yearDiv4} (⌊${c.lastTwo}÷4⌋)${is21st?" − 1 (2000s rule)":""}.`,
-     hint:`Add the two numbers${is21st?", then subtract 1 for the 2000s.":"."}`,
-     answer:c.sum2,confirm:`Year sum = ${c.sum2}`},
-    {part:2,
-     q:`Part 2 · How far is ${c.sum2} above the closest multiple of 7 below it?`,
-     hint:`Biggest 7× that fits in ${c.sum2}, then subtract. 🧠 this is R₂.`,
-     answer:c.r2,confirm:`R₂ = ${c.r2}  (memorize)`},
-    // COMBINE
-    {part:3,
-     q:`Part 3 · Add your two memorized numbers: R₁ + R₂.`,
-     hint:`Recall R₁ and R₂ and add them together.`,
-     answer:c.combine,confirm:`R₁ + R₂ = ${c.r1} + ${c.r2} = ${c.combine}`},
-    {part:3,
-     q:`Final · How far is ${c.combine} above the closest multiple of 7 below it?`,
-     hint:`Biggest 7× that fits in ${c.combine}, then subtract — that remainder is the day.`,
-     answer:c.remainder,confirm:`Remainder = ${c.remainder} → ${DAY_EMOJI[c.dayName]} ${c.dayName}`},
+function steps(c){
+  const leapTag=(c.leap&&c.m<=2)?' <i>(leap year &rarr; '+c.mn+')</i>':'';
+  const minusTxt=c.minus?' &minus; 1 (it\'s the 2000s)':'';
+  return [
+    {part:1, q:'Part 1: add the day + month',
+     hint:c.d+' + '+c.mn+' ('+c.name+')'+leapTag,
+     ans:c.sum1, note:c.d+' + '+c.mn+' = '+c.sum1, table:c.m},
+    {part:1, q:'Throw away the 7s from '+c.sum1,
+     hint:'Take out 7, 14, 21\u2026 what\'s left? That\'s A &mdash; remember it! 🧠',
+     ans:c.A, note:'A = '+c.A+'  (remember this)'},
+    {part:2, q:'Part 2: the year math',
+     hint:c.yy+' + '+c.quarter+' (that\'s '+c.yy+'\u00f74)'+minusTxt,
+     ans:c.sum2, note:'year sum = '+c.sum2},
+    {part:2, q:'Throw away the 7s from '+c.sum2,
+     hint:'Same as before. What\'s left is B &mdash; remember it too! 🧠',
+     ans:c.B, note:'B = '+c.B+'  (remember this)'},
+    {part:3, q:'Part 3: add your two numbers',
+     hint:'A + B = '+c.A+' + '+c.B,
+     ans:c.sum3, note:c.A+' + '+c.B+' = '+c.sum3},
+    {part:3, q:'Last one &mdash; throw away the 7s from '+c.sum3,
+     hint:'Whatever is left over IS the day!',
+     ans:c.left, note:'leftover '+c.left+' &rarr; '+EMOJI[c.day]+' '+c.day},
   ];
 }
 
-function newDate(){
-  const d=POOL[Math.floor(Math.random()*100)];
-  state.dateData=calcDay(d.day,d.month,d.year);
-  state.stepIdx=0;
-  state.flippedSteps={};
-  state.cardEnter=false;
-  state.done=false;
-  state.showTable=false;
-  state.flipped=false;
-  state.steps=buildSteps(state.dateData);
-  render();
+function miniMonth(hl){
+  let h='<div class="minit">';
+  [[1,2,3,4,5,6],[7,8,9,10,11,12]].forEach(function(col){
+    h+='<div>';
+    col.forEach(function(m){const M=MONTHS[m];h+='<div class="r '+(m===hl?'hl':'')+'"><span>'+M.name+'</span><b>'+M.n+'</b></div>';});
+    h+='</div>';
+  });
+  return h+'</div>';
 }
 
-function toggleFlip(){
-  state.flipped=!state.flipped;
-  document.getElementById('flashcard').classList.toggle('flipped',state.flipped);
+function renderPlay(){
+  const c=cur, S=steps(c);
+  document.getElementById('pl-date').textContent=c.name+' '+c.d+', '+c.y;
+  document.getElementById('d-emoji').textContent=EMOJI[c.day];
+  document.getElementById('d-day').textContent=c.day;
+  document.getElementById('d-day').style.color=FG[c.day];
+  document.getElementById('d-sub').textContent=c.name+' '+c.d+', '+c.y;
+  const dback=document.getElementById('dateback');
+  dback.style.background=BG[c.day];
+  dback.style.border='3px solid '+FG[c.day]+'55';
+  document.getElementById('datecard').classList.toggle('flipped',dateFlipped);
+
+  let html='';
+  S.forEach(function(s,i){
+    if(i<st.idx||st.done){
+      html+='<div class="trail"><div class="tk">\u2713</div><div class="tt"><span class="ts">Step '+(i+1)+'</span>'+s.note+'</div></div>';
+    }
+  });
+  if(!st.done){
+    const i=st.idx, s=S[i], f=!!st.flipped[i];
+    const isLast=i===S.length-1;
+    const pl=s.part===1?'Part 1 \u00b7 Day + Month':s.part===2?'Part 2 \u00b7 Year':'Part 3 \u00b7 Combine';
+    const tbl=(i===0)?miniMonth(c.m):'';
+    html+=''
+      +'<div class="scene '+(st.enter?'cardenter':'')+'">'
+      +'<div class="stephead p'+s.part+'">'+pl+' \u00b7 step '+(i+1)+' of 6</div>'
+      +'<div class="flip stepflip '+(f?'flipped':'')+'" '+(f?'':'onclick="flipStep('+i+')"')+'>'
+      +'<div class="face front f'+s.part+'">'
+      +'<div class="sc-q">'+s.q+'</div>'
+      +'<div class="sc-hint">'+s.hint+'</div>'
+      +tbl
+      +'<div class="sc-tap">👆 tap to flip & reveal</div>'
+      +'</div>'
+      +'<div class="face back">'
+      +'<div class="sc-ans">'+s.ans+'</div>'
+      +'<div class="sc-note">'+s.note+'</div>'
+      +'<div class="sc-tap" style="color:#2F9E6B">'+(isLast?'🎉 done!':'\u2192 next step')+'</div>'
+      +'</div>'
+      +'</div>'
+      +'</div>';
+  }
+  document.getElementById('psteps').innerHTML=html;
+  st.enter=false;
+
+  const fin=document.getElementById('pfinal');
+  if(st.done){
+    fin.innerHTML=''
+      +'<div class="face cardenter" style="background:'+BG[c.day]+';border:3px solid '+FG[c.day]+'66;border-radius:24px;padding:30px 20px;margin-top:6px">'
+      +'<div class="bigemoji">'+EMOJI[c.day]+'</div>'
+      +'<div class="bigday" style="color:'+FG[c.day]+'">'+c.day+'!</div>'
+      +'<div class="bigsub">'+c.name+' '+c.d+', '+c.y+'</div>'
+      +'<div style="margin-top:8px;font-size:.82rem;font-weight:700;color:'+FG[c.day]+';opacity:.85">A '+c.A+' + B '+c.B+' = '+c.sum3+' \u2192 leftover '+c.left+'</div>'
+      +'<button class="newbtn tap" style="margin-top:16px" onclick="newDate()">🎲 Try another</button>'
+      +'</div>';
+  } else {
+    fin.innerHTML='';
+  }
 }
 
 function flipStep(i){
-  if(i!==state.stepIdx||state.done||state.flippedSteps[i])return;
-  state.flippedSteps[i]=true;
-  render();
-  // After the flip animation + a beat to read the answer, advance automatically
-  setTimeout(()=>{
-    if(i===state.steps.length-1){
-      state.done=true;
-    } else {
-      state.stepIdx=i+1;
-      state.cardEnter=true;
-    }
-    render();
-  },1100);
+  if(i!==st.idx||st.done||st.flipped[i])return;
+  st.flipped[i]=true;
+  renderPlay();
+  setTimeout(function(){
+    if(i===5){ st.done=true; renderPlay(); confetti(); }
+    else { st.idx=i+1; st.enter=true; renderPlay(); }
+  },1150);
 }
 
-function toggleTable(){
-  state.showTable=!state.showTable;
-  render();
-}
-
-function inlineMonthTableHTML(highlightMonth){
-  const cols=[[1,2,3,4,5,6],[7,8,9,10,11,12]];
-  let html='<div class="imt-grid">';
-  cols.forEach(col=>{
-    html+='<div class="imt-col">';
-    col.forEach(m=>{
-      const info=MONTH_FACTORS[m];
-      const fs=FACTOR_STYLE[info.factor];
-      const isHL=m===highlightMonth;
-      const bg=isHL?fs.bg:'white';
-      const outline=isHL?`outline:2px solid ${fs.color};outline-offset:-2px;`:'';
-      const nameColor=isHL?fs.color:'#1A1530';
-      let leapHtml='';
-      if(info.leapFactor!==info.factor){
-        const lfs=FACTOR_STYLE[info.leapFactor];
-        leapHtml=`<span class="imt-leap" style="background:${lfs.bg};color:${lfs.color}">${info.leapFactor}✦</span>`;
-      }
-      html+=`<div class="imt-row" style="background:${bg};${outline}">
-        <span class="imt-name" style="color:${nameColor}">${info.name}</span>
-        <span style="display:flex;align-items:center">
-          <span class="imt-val" style="color:${fs.color}">${info.factor}</span>${leapHtml}
-        </span>
-      </div>`;
-    });
-    html+='</div>';
-  });
-  html+='</div><div class="imt-note">✦ leap year value · same color = same number</div>';
-  return html;
-}
-
-function render(){
-  if(!state.dateData)return;
-  const c=state.dateData;
-  const mName=MONTH_FACTORS[c.month].name;
-
-  // Flashcard — date as single line, no leap year mention
-  document.getElementById('fc-date-big').textContent=`${mName} ${c.day}, ${c.year}`;
-  document.getElementById('fc-back-emoji').textContent=DAY_EMOJI[c.dayName];
-  document.getElementById('fc-back-day').textContent=c.dayName;
-  document.getElementById('fc-back-day').style.color=DAY_ACCENT[c.dayName];
-  document.getElementById('fc-back-sub').textContent=`${mName} ${c.day}, ${c.year}`;
-  const fcBack=document.getElementById('fc-back');
-  fcBack.style.background=DAY_COLOR[c.dayName];
-  fcBack.style.border=`2px solid ${DAY_ACCENT[c.dayName]}44`;
-  document.getElementById('flashcard').classList.toggle('flipped',state.flipped);
-
-  // Steps — completed trail + single active flip card
-  const container=document.getElementById('steps-container');
-  let html='';
-
-  // Completed steps trail (compact)
-  state.steps.forEach((step,i)=>{
-    const isDone=i<state.stepIdx||state.done;
-    if(isDone){
-      html+=`<div class="trail-row">
-        <div class="trail-dot">✓</div>
-        <div class="trail-text"><span class="trail-step">Step ${i+1}</span>${step.confirm}</div>
-      </div>`;
-    }
-  });
-
-  // Active flip card (only if not done)
-  if(!state.done){
-    const i=state.stepIdx;
-    const step=state.steps[i];
-    const isLast=i===state.steps.length-1;
-    const isFlipped=!!state.flippedSteps[i];
-    let tableHtml='';
-    if(i===0){
-      const tbtnLabel=state.showTable?'▲ Hide':'📋 Show';
-      tableHtml=`<div style="margin-top:10px;width:100%" data-tap="noop">
-        <button class="btn-table-toggle" data-tap="toggle-table">${tbtnLabel} month factor table</button>
-        ${state.showTable?`<div class="inline-month-table">${inlineMonthTableHTML(c.month)}</div>`:''}
-      </div>`;
-    }
-    const partLabel=step.part===1?'PART 1 · Day + Month':step.part===2?'PART 2 · Year':'COMBINE';
-    const frontClass=step.part===1?'front-p1':step.part===2?'front-p2':'front-p3';
-    html+=`
-      <div class="stepcard-scene ${state.cardEnter?'card-enter':''}">
-        <div class="stepcard-header part-${step.part}">${partLabel} · step ${i+1}/${state.steps.length}</div>
-        <div class="stepcard ${isFlipped?'flipped':''}" ${isFlipped?'':`data-tap="flip-step" data-step="${i}"`}>
-          <div class="stepcard-face stepcard-front ${frontClass}">
-            <div class="sc-question">${step.q}</div>
-            <div class="step-hint">${step.hint}</div>
-            ${tableHtml}
-            <div class="sc-tap">👆 tap to flip &amp; reveal</div>
-          </div>
-          <div class="stepcard-face stepcard-back">
-            <div class="sc-answer">${step.answer}</div>
-            <div class="sc-answer-note">${step.confirm}</div>
-            <div class="sc-tap" style="color:#065f46">${isLast?'🎉 finishing…':'→ next step…'}</div>
-          </div>
-        </div>
-      </div>`;
-  }
-  container.innerHTML=html;
-  state.cardEnter=false;
-
-  // Result
-  const resultBlock=document.getElementById('result-block');
-  if(state.done){
-    resultBlock.className='result-reveal';
-    resultBlock.style.background=DAY_COLOR[c.dayName];
-    resultBlock.innerHTML=`
-      <div class="result-emoji-big">${DAY_EMOJI[c.dayName]}</div>
-      <div class="result-day-name" style="color:${DAY_ACCENT[c.dayName]}">${c.dayName}!</div>
-      <div class="result-context">${mName} ${c.day}, ${c.year}</div>
-      <div class="result-math">R₁ ${c.r1} + R₂ ${c.r2} = ${c.combine} → remainder ${c.remainder}</div>
-      <div style="margin-top:20px">
-        <button class="btn btn-new" data-tap="new-date">Next date 🎲</button>
-      </div>`;
-  } else {
-    resultBlock.className='hidden';
-    resultBlock.innerHTML='';
-  }
-
-  // Skip button
-  const skipRow=document.getElementById('skip-row');
-  skipRow.classList.toggle('hidden', state.done || state.stepIdx===0);
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-// Delegated click handling. touch-action:manipulation (set in CSS) removes the
-// 300ms tap delay, so a plain click listener fires instantly and reliably on iOS
-// Safari without the double-fire problems of manual touchend/preventDefault.
-function runAction(el,e){
-  const action=el.getAttribute('data-tap');
-  if(action==='noop')return;
-  switch(action){
-    case 'tab-learn': switchTab('learn'); break;
-    case 'tab-practice': switchTab('practice'); break;
-    case 'flip-flashcard': toggleFlip(); break;
-    case 'new-date': if(e)e.stopPropagation(); newDate(); break;
-    case 'toggle-table': if(e)e.stopPropagation(); toggleTable(); break;
-    case 'flip-step':
-      if(e)e.stopPropagation();
-      flipStep(parseInt(el.getAttribute('data-step'),10));
-      break;
+function confetti(){
+  const colors=['#F8C6DA','#BCD7F5','#B6E9CB','#FCEFA8','#E7DEFF','#FFD9DE'];
+  for(let i=0;i<60;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=(Math.random()*100)+'vw';
+    c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(2+Math.random()*1.6)+'s';
+    c.style.animationDelay=(Math.random()*0.4)+'s';
+    c.style.transform='rotate('+(Math.random()*360)+'deg)';
+    document.body.appendChild(c);
+    setTimeout(function(){c.remove();},3800);
   }
 }
 
-function onClick(e){
-  const el=e.target.closest('[data-tap]');
-  if(!el)return;
-  runAction(el,e);
-}
-
-function init(){
-  try{ buildLearnMonthTable(); }catch(err){}
-  try{ buildRemainderGrid(); }catch(err){}
-  document.addEventListener('click', onClick, false);
-}
-
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+buildKey();
+buildMonths();
 </script>
 </body>
 </html>
