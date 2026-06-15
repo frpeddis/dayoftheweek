@@ -51,10 +51,32 @@ body{font-family:'Nunito',sans-serif;background:#FFF7E6;color:#3A3060;min-height
 .final-pill{background:#FCEFA8;border:2.5px solid #F2D75B;color:#8A6D12}
 
 .daykey{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.daykey.daykey-col{flex-direction:column;flex-wrap:nowrap}
+.daykey-col .chip{min-width:0;width:100%}
 .chip{flex:1 1 auto;min-width:128px;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;font-weight:800;font-size:.95rem;transition:transform .15s}
 .chip:hover{transform:translateY(-2px) rotate(-1deg)}
 .chip .n{font-family:'Baloo 2',cursive;font-size:1.3rem;width:24px;text-align:center}
 .chip .e{font-size:1.2rem}
+
+/* WATCH-IT-WORK flashcards (learn tab) */
+.wscene{perspective:1200px;margin-top:12px;animation:cardIn .45s cubic-bezier(.34,1.56,.64,1)}
+.whead{font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-align:center;margin:0 0 6px}
+.whead.p1{color:#C77BA0}.whead.p2{color:#5E86C9}.whead.p3{color:#3A9E73}
+.wflip{position:relative;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.45,.05,.2,1);cursor:pointer}
+.wflip.flipped{transform:rotateY(180deg)}
+.wface{border-radius:18px;padding:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px}
+.wface.wfront.f1{background:linear-gradient(135deg,#FFEFF4,#FFF7E6);border:3px solid #F8C6DA}
+.wface.wfront.f2{background:linear-gradient(135deg,#EAF4FF,#F3EEFF);border:3px solid #BCD7F5}
+.wface.wfront.f3{background:linear-gradient(135deg,#EAFBF1,#E7FBF6);border:3px solid #B6E9CB}
+.wface.wback{position:absolute;inset:0;transform:rotateY(180deg);background:linear-gradient(135deg,#EAFBF1,#F3FFF9);border:3px solid #9FE0BF}
+.w-q{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#3A3060;line-height:1.3}
+.w-sum{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;margin-top:6px;color:#3A3060}
+.w-tap{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9385C0;opacity:.75;margin-top:10px}
+.w-ans{font-family:'Baloo 2',cursive;font-size:2.2rem;font-weight:800;color:#2F9E6B;line-height:1}
+.w-note{font-size:.9rem;font-weight:700;color:#2F9E6B;margin-top:6px}
+.w-done{background:linear-gradient(135deg,#D5F7E2,#FCEFA8);border-radius:18px;padding:22px;text-align:center;margin-top:12px;animation:cardIn .45s cubic-bezier(.34,1.56,.64,1)}
+.w-done .de{font-size:2.6rem;line-height:1}
+.w-done .dd{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:#2F9E6B;line-height:1;margin-top:2px}
 
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
 .mrow{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-radius:12px;font-size:.95rem;font-weight:700;transition:transform .15s}
@@ -62,6 +84,10 @@ body{font-family:'Nunito',sans-serif;background:#FFF7E6;color:#3A3060;min-height
 .mrow .mv{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.2rem}
 .leapnote{font-size:.88rem;color:#6A5E92;margin-top:10px;line-height:1.5;background:#FFF7E6;border-radius:12px;padding:10px 12px}
 .leapnote b{color:#3A3060}
+.sevenexplain{margin-top:12px;background:linear-gradient(135deg,#EAF4FF,#F3EEFF);border:2.5px solid #BCD7F5;border-radius:16px;padding:14px 16px}
+.sevenexplain p{font-size:.92rem;line-height:1.55;color:#4A5578}
+.sevenexplain b{color:#2B4FB0}
+.se-title{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;color:#3A3060;margin-bottom:6px}
 
 .ex{border-radius:16px;padding:12px 14px;margin-top:10px}
 .ex .ttl{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
@@ -131,84 +157,69 @@ footer{text-align:center;padding:22px 0;font-size:.85rem;color:#9385C0;font-weig
 
   <div class="tabs">
     <button class="tab on tap" id="t-learn" onclick="tab('learn')">📖 The trick</button>
-    <button class="tab tap" id="t-play" onclick="tab('play')">🎮 Try it</button>
+    <button class="tab tap" id="t-play" onclick="tab('play')">🧠 Try it</button>
   </div>
 
   <div id="p-learn">
 
     <div class="card">
+      <h2>📅 The only thing to remember</h2>
+      <p>Every month has a number. <b>Same color = same number</b>, so it sticks fast! (First 6 months on the left, last 6 on the right.)</p>
+      <div class="mgrid" id="mtable"></div>
+      <div class="sevenexplain">
+        <div class="se-title">🔁 The magic of <b>7</b></div>
+        <p>The whole trick works because a week has <b>7 days</b>, so days repeat in a loop of 7. That's why we keep <b>throwing away 7s</b> from our sums — every group of 7 is just one full week that lands you back on the same day, so it doesn't change the answer!</p>
+        <p style="margin-top:6px">Example: <b>10</b> days from today? Throw away one 7 → only <b>3</b> matters. <b>21</b> days? That's exactly three weeks → <b>0</b> left, same day again. The little leftover (always <b>0 to 6</b>) is all you need. Grown-ups call this trick "<b>mod 7</b>".</p>
+      </div>
+      <div class="leapnote">🚀 <b>Years 2000+:</b> take away 1 in Part 2 before counting 7s. &nbsp; 🐸 <b>Leap years:</b> use <b>0</b> for January and <b>3</b> for February (other months stay the same).</div>
+    </div>
+
+    <div class="card">
       <h2>🍪 The big idea</h2>
-      <p class="big">Do <b>two easy mini-sums</b> and remember the leftover from each. Then add those two leftovers — and the answer is the day!</p>
+      <p class="big">Do <b>two easy mini-sums</b> and remember the leftover from each. Then add those two leftovers — and the answer is the day! Here it is for <b>September 4, 1930</b>:</p>
 
       <div class="part p1">
         <div class="ph"><span class="badge b1">Part 1</span> Day + Month</div>
         <div class="adder">
-          <div class="tile t-day"><div class="tn">22</div><div class="tl">the day</div></div>
+          <div class="tile t-day"><div class="tn">4</div><div class="tl">the day</div></div>
           <div class="op">+</div>
-          <div class="tile t-mon"><div class="tn">4</div><div class="tl">month number</div></div>
+          <div class="tile t-mon"><div class="tn">6</div><div class="tl">Sept. number</div></div>
         </div>
         <div class="seven">
-          <div class="arr">⬇ count out the 7s</div>
-          <div class="pill">leftover = <b>A</b> (0–6)</div>
+          <div class="arr">4 + 6 = 10 ⬇ throw away 7</div>
+          <div class="pill">leftover <b>A = 3</b></div>
         </div>
-        <div class="memo">🧠 remember <b>A</b></div>
+        <div class="memo">🧠 remember <b>A = 3</b></div>
       </div>
 
       <div class="part p2">
         <div class="ph"><span class="badge b2">Part 2</span> Year</div>
         <div class="adder">
-          <div class="tile t-y1"><div class="tn">63</div><div class="tl">last 2 digits</div></div>
+          <div class="tile t-y1"><div class="tn">30</div><div class="tl">last 2 digits</div></div>
           <div class="op">+</div>
-          <div class="tile t-y2"><div class="tn">15</div><div class="tl">÷4, drop dot</div></div>
+          <div class="tile t-y2"><div class="tn">7</div><div class="tl">÷4, drop dot</div></div>
         </div>
         <div class="seven">
-          <div class="arr">⬇ count out the 7s</div>
-          <div class="pill">leftover = <b>B</b> (0–6)</div>
+          <div class="arr">30 + 7 = 37 ⬇ throw away 35</div>
+          <div class="pill">leftover <b>B = 2</b></div>
         </div>
-        <div class="memo">🧠 remember <b>B</b></div>
+        <div class="memo">🧠 remember <b>B = 2</b></div>
       </div>
 
       <div class="part p3 combine">
         <div class="ph" style="justify-content:center"><span class="badge b3">Part 3</span> Add them</div>
-        <div class="big-eq">A + B</div>
+        <div class="big-eq">A + B = 3 + 2 = 5</div>
         <div class="seven">
-          <div class="arr">⬇ count out the 7s one last time</div>
-          <div class="pill final-pill">leftover = the day ⭐</div>
+          <div class="arr">5 has no 7 to throw away ⬇</div>
+          <div class="pill final-pill">leftover <b>5 = ⚡ Thursday</b></div>
         </div>
       </div>
-
-      <div class="leapnote">🚀 <b>Years 2000+:</b> take away 1 in Part 2 before counting 7s. &nbsp; 🐸 <b>Leap years:</b> use <b>0</b> for January and <b>3</b> for February (other months stay the same).</div>
     </div>
 
     <div class="card">
       <h2>🗝️ The day key</h2>
-      <p>The final leftover always means the same day:</p>
-      <div class="daykey" id="daykey"></div>
-    </div>
-
-    <div class="card">
-      <h2>📅 The month numbers</h2>
-      <p>The one thing to remember. <b>Same color = same number</b>, so it sticks fast!</p>
-      <div class="mgrid" id="mtable"></div>
-    </div>
-
-    <div class="card">
-      <h2>✨ Watch it work — Nov 22, 1963</h2>
-      <div class="ex" style="background:#FFEFF4">
-        <div class="ttl" style="color:#C77BA0">Part 1 · Day + Month</div>
-        <div class="line"><span>22 + 4 (November)</span><span class="v">= 26</span></div>
-        <div class="line"><span>throw away 21 (= 3×7)</span><span class="v" style="color:#C77BA0">A = 5</span></div>
-      </div>
-      <div class="ex" style="background:#EAF4FF;margin-top:8px">
-        <div class="ttl" style="color:#5E86C9">Part 2 · Year</div>
-        <div class="line"><span>63 + 15 (63÷4)</span><span class="v">= 78</span></div>
-        <div class="line"><span>throw away 77 (= 11×7)</span><span class="v" style="color:#5E86C9">B = 1</span></div>
-      </div>
-      <div class="ex" style="background:#EAFBF1;margin-top:8px">
-        <div class="ttl" style="color:#3A9E73">Part 3 · Add them</div>
-        <div class="line"><span>A + B = 5 + 1</span><span class="v">= 6</span></div>
-        <div class="line"><span>6 has no 7 to remove</span><span class="v" style="color:#2F9E6B">→ 🎉 Friday</span></div>
-      </div>
+      <p>The final leftover always means the same day — in order, easy to remember:</p>
+      <div class="daykey daykey-col" id="daykey"></div>
     </div>
 
   </div>
@@ -236,7 +247,7 @@ footer{text-align:center;padding:22px 0;font-size:.85rem;color:#9385C0;font-weig
     <div id="pfinal"></div>
   </div>
 
-  <footer>F. Peddis: made for curious people :-) · the calendar trick</footer>
+  <footer>credits: F. Peddis · made for curious people :-) · the calendar trick</footer>
 </div>
 
 <script>
@@ -280,10 +291,13 @@ function solve(d,m,y){
 
 function buildKey(){
   const el=document.getElementById('daykey');
+  // light (0 = Saturday) → dark (6 = Friday) pastel blue scale
+  const KEYBG=['#EAF4FF','#D6E8FF','#BFD9FF','#A6C8FB','#8FB6F2','#7AA3E6','#6690D6'];
+  const KEYFG=['#3A6AB0','#33619F','#2C568F','#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF'];
   for(let i=0;i<7;i++){
     const day=DAYS[i];
     const c=document.createElement('div');
-    c.className='chip';c.style.background=BG[day];c.style.color=FG[day];
+    c.className='chip';c.style.background=KEYBG[i];c.style.color=KEYFG[i];
     c.innerHTML='<span class="n">'+i+'</span><span class="e">'+EMOJI[day]+'</span><span>'+day+'</span>';
     el.appendChild(c);
   }
@@ -432,7 +446,7 @@ function flipStep(i){
   setTimeout(function(){
     if(i===5){ st.done=true; renderPlay(); confetti(); }
     else { st.idx=i+1; st.enter=true; renderPlay(); }
-  },1150);
+  },950);
 }
 
 function confetti(){
@@ -452,6 +466,7 @@ function confetti(){
 
 buildKey();
 buildMonths();
+
 </script>
 </body>
 </html>
